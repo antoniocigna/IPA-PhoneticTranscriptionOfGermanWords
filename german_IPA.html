@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html id="id_html" style="background-color: rgb(241, 242, 156); color: rgb(1, 0, 3);">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="description" content="ClipByClip A tool to practice language comprehension">
+      <meta name="license"     content="license MIT: you can share and modify the software, but you must include the license file">
+      <meta name="keywords"    content="HTML,CSS,JavaScript, bilingue, video, audio, subtitle,clip">
+      <meta name="author"      content="Antonio Cigna">
+      <meta name="date"        content="2023">
+      <meta name="viewport"    content="width=device-width, initial-scale=1.0">
+      <title>Look for IPA (International Phonetic Association) transcription of german words</title>
+		<!--
+		this tool uses the 'de_dewikt.csv' file of 'german-ipa-dict-main' in (github) 		
+		-->
+<script src="german-ipa-dict_script.js"> </script>
+
+ <script src="./ras_common/ras_VOICES_getVoices.js"></script>
+ <script src="./speak_germanSynthVoice_script.js"></script>
+ 
+
+<style>
+td {
+	text-align:left;
+}
+.c_tdend {  min-width:10em;}
+.c_o { color:black; min-width:20em;} 
+.c_t { color:blue;} 
+.c_word{  font-size:2em;}
+.c_other{font-size:1.0em;}
+.c_top { margin-top: 1em;    padding-top: 1em;} 
+.c_bot { margin-bottom: 1em; padding-bottom: 1em;} 
+.c_left { text-align:left;}
+.c_search {  background-color: lightgrey;}
+</style>
+
+</head>
+<body>
+<div style="display:flex; justify-content: center;">  
+	<div  style="text-align:center; ">
+		
+		<label for="inp1"><b>Write the german word here below</b></label><br>
+		<br>
+		<input id="inp1" type="text" value=""  style="font-size:1.2em; width:50em;text-align:center;">
+		<br><br>
+		<button onclick="uno()"><b>Look for its phonetic transcription</b></button>
+		<br>
+		<br>
+		<br>
+		<table  style="border:2px solid black;">
+			<tr><td id="preNot" ></td><td id="O_min" class="c_o c_word c_left" ></td><td id="playMin"><button onclick="playTd(this)">play</button></td><td></td></tr>
+			<tr><td>             </td><td id="T_min" class="c_t c_word c_left c_bot" ></td><td id="oth_min"></td><td></td></tr>
+
+			<tr id="trFound1">	<td id="found" class="c_tdend"></td>
+								<td id="O_fnd" class="c_o c_word c_top c_bot c_left  c_search " ></td>
+								<td><button onclick="playTd(this)">play</button></td><td  class="c_tdend"></td>
+			</tr>
+			<tr id="trFound2"><td></td>
+								<td id="T_fnd" class="c_t c_word c_top c_bot c_left  c_search " ></td><td id="oth_fnd"></td>
+			</tr>
+
+			<tr><td id="postNot"></td><td id="O_max" class="c_o c_word c_left c_top " ></td><td><button onclick="playTd(this)">play</button></td><td></td></tr>
+			<tr><td>             </td><td id="T_max" class="c_t c_word c_left c_bot " ></td><td id="oth_max"></td></tr>
+		</table>
+		<br>
+		<div id="closer"></div> 
+		
+	</div>
+</div>
+
+
+<script>
+
+
+//---------------------
+
+// Iterative function to implement Binary Search
+// codice copiato da  https://www.geeksforgeeks.org/binary-search-in-javascript/  e un poco modificato
+
+var myArray = wordList; // "anta, anto, antonello, antonia, antonietta".replaceAll(" ","").replaceAll(" ","").replaceAll(" ","").split(","); 
+
+function findIndexArray(x) {
+
+    let start=0, end=myArray.length-1;
+         
+    // Iterate while start not meets end
+    while (start<=end){
+        // Find the mid index
+        let mid=Math.floor((start + end)/2);
+		let valueMid = myArray[mid]
+		//console.log("start=" + start + "  end=" + end + " mid=" + mid  + " valueMid=" + valueMid); 
+        // If element is present at mid, return True
+        if (valueMid===x) return [true, mid,mid];
+ 
+        // Else look in left or right half accordingly
+        else if (valueMid < x)
+             start = mid + 1;
+        else
+             end = mid - 1;
+    }
+	
+    return [false, start, end];
+}
+
+//---------------------
+
+</script>
+<script>
+var eleInp1 = document.getElementById("inp1");  
+var eleOut= document.getElementById("out1");
+
+//--------------------------
+
+var minV, maxV; 
+var minVV, minTran, minOth;
+var maxVV, maxTran, maxOth;
+var toBeSearched ; 
+var swFound0; 
+var swFound, min1,max1;
+var strFound;
+
+var ele_preNot = document.getElementById("preNot");
+var ele_O_min  = document.getElementById("O_min" ); 
+var ele_T_min  = document.getElementById("T_min" ); 
+var ele_oth_min= document.getElementById("oth_min" ); 
+
+var ele_postNot = document.getElementById("postNot");
+var ele_O_max  = document.getElementById("O_max" ); 
+var ele_T_max  = document.getElementById("T_max" ); 
+var ele_oth_max= document.getElementById("oth_max" )
+
+var ele_found  = document.getElementById("found");
+var ele_O_fnd  = document.getElementById("O_fnd" ); 
+var ele_T_fnd  = document.getElementById("T_fnd" ); 
+var ele_oth_fnd= document.getElementById("oth_fnd" )
+var ele_tr_fnd1  = document.getElementById("trFound1" ); 
+var ele_tr_fnd2  = document.getElementById("trFound2" ); 
+
+var ele_closer   = document.getElementById("closer");
+
+//------------
+function uno() {
+	toBeSearched = eleInp1.value.trim().toLowerCase() ; // + " " +  eleInp1.value.trim(); 
+	//console.log("toBeSearched = " + toBeSearched  + " len array=" + myArray.length); 
+	
+	swFound, min1,max1;
+	[swFound0, max1, min1] = findIndexArray(  toBeSearched );  // prima max1 e poi min1 
+	
+	//console.log("min1=" + min1 + "\nmax1=" + max1); 
+	
+	if (swFound) strFound="trovato "; 
+	else strFound = "non trovato" ; 
+	minVal="", maxVal=""; 
+	if  ((min1 >= 0) && (min1 < myArray.length)) minVal = myArray[min1]; 	
+	if  ((max1 >= 0) && (max1 < myArray.length)) maxVal = myArray[max1]; 
+	minV = (minVal+"////").split("/");
+	maxV = (maxVal+"////").split("/");
+	var txt_closer="<table>" ;
+	var trBeg;
+	for(var g=min1-3; g <= (max1+3); g++) {
+		
+		var tr1 = myArray[g].split("/"); 
+		if (tr1[0] == toBeSearched) trBeg = '<tr class="c_search">';
+		else trBeg = '<tr>'; 
+		txt_closer += trBeg	
+		for(var z1=0; z1 < tr1.length; z1++) {
+			txt_closer += "<td>" + tr1[z1] + "</td>"; 
+			if (z1 == 1) {
+				txt_closer += '<td id="playMin"><button onclick="playTd(this)">play</button></td>' ; 
+			}
+		}
+		txt_closer += "</tr>"	
+	}
+	ele_closer.innerHTML = txt_closer + "</table>"; 
+	//console.log("minVal=" + minVal + "\nmaxVal=" + maxVal); 
+	
+	minVV = minV[1].replaceAll(","," ").trim(); minTran = minV[2] ; minOth = minV[3]; 
+	maxVV = maxV[1].replaceAll(","," ").trim(); maxTran = maxV[2] ; maxOth = maxV[3]; 
+	keyMin = minV[0]; //  + " " + minVV;
+	keyMax = maxV[0]; //  + " " + maxVV;
+	//console.log("minVal=" + minVV + "<==     minVV=" + minVV + "      minTran=" + minTran) 
+	//console.log("maxVal=" + maxVV + "<==     maxVV=" + maxVV + "      maxTran=" + maxTran) 
+	/**
+	console.log("" + 
+			"\n         pre=" + minVV + "<=="  + 
+			"\ntoBeSearched=" + toBeSearched + "<==" +  
+			"\n        post=" + maxVV + "<==" ); 
+	**/		
+	
+		
+			ele_tr_fnd2.style.display = null;		
+			
+	swFound =( ( toBeSearched == keyMin) || ( toBeSearched == keyMax) ) ;    
+	if (swFound) {
+		ele_found.innerHTML   = "";// swFound; // "found"; 
+		ele_O_fnd.innerHTML   = eleInp1.value.trim(); 
+		if (keyMin == toBeSearched) {
+			ele_T_fnd.innerHTML   = minTran; 
+			ele_oth_fnd.innerHTML = minOth;	
+		} else {
+			ele_T_fnd.innerHTML   = maxTran; 
+			ele_oth_fnd.innerHTML = maxOth;	
+		}
+		ele_preNot.parentElement.style.display = "none";
+		ele_preNot.innerHTML  = "";
+		ele_O_min.innerHTML   = ""; 
+		ele_T_min.innerHTML   = ""; 
+		ele_oth_min.innerHTML = "";	
+		ele_postNot.parentElement.style.display = "none";
+		ele_postNot.innerHTML = "";
+		ele_O_max.innerHTML   = ""; 
+		ele_T_max.innerHTML   = ""; 
+		ele_oth_max.innerHTML = "";				
+	} else {
+		
+		ele_preNot.parentElement.style.display = null;
+		
+		ele_postNot.parentElement.style.display = null;
+		ele_preNot.innerHTML  = ""
+		ele_O_min.innerHTML   = minVV; 
+		ele_T_min.innerHTML   = minTran; 
+		ele_oth_min.innerHTML = minOth;	
+		
+		ele_postNot.innerHTML  = ""
+		ele_O_max.innerHTML   = maxVV; 
+		ele_T_max.innerHTML   = maxTran; 
+		ele_oth_max.innerHTML = maxOth;		
+		ele_found.innerHTML =  "non trovato"; // ""; 
+		ele_O_fnd.innerHTML   = eleInp1.value.trim(); 
+		ele_T_fnd.innerHTML   = ""; 
+		ele_oth_fnd.innerHTML = "";	
+		ele_tr_fnd2.style.display = "none";		
+	}
+	/***
+	eleOut.innerHTML = "<b>" + toBeSearched + "</b>" + " " + strFound + " st trova tra " +
+		 "<br>   " + minVal + " (ix=" + min1 +") "  +  
+		 "<br> e " + maxVal + " (ix=" + max1+")"; 
+	if (!swFound) {
+		if (max1 >= myArray.length) {
+			eleOut.innerHTML = "<b>" + toBeSearched + "</b>" + " " + strFound + 
+				" dovrebbe stare dopo l'ultimo elemento " + minVal  + " (ix=" + min1 +") "  ; 
+		}
+		if (min1 < 0) {
+			eleOut.innerHTML = "<b>" + toBeSearched + "</b>" + " " + strFound + 
+				" dovrebbe stare prima del primo elemento " + maxVal + " (ix="+max1 + ")"  ; 
+		}
+	}	
+	***/	
+}
+</script>
+
+<script>
+let ixPlayVoice = 0; 
+function playTd(this1) {
+    if (swFirst) {
+        firstPlay();
+        swFirst = false;
+        return;
+    }
+	ixPlayVoice++; 
+	if (ixPlayVoice >= listVox.length) ixPlayVoice=0;  
+    var eleTd = this1.parentElement;
+    var eleTdPrev = eleTd.previousElementSibling;
+    var textCol = eleTdPrev.innerHTML.split("/");
+    var txtToPlay = textCol[0].trim();
+    //this1.innerHTML = "Play " + txtToPlay;
+    my_onclick_tts_text_to_speech2(txtToPlay, ixPlayVoice);
+}
+//-------------------
+
+</script>
+
+
+</html>

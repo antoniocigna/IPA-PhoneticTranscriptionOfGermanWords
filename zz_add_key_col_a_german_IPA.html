@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html id="id_html" style="background-color: rgb(241, 242, 156); color: rgb(1, 0, 3);">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="description" content="ClipByClip A tool to practice language comprehension">
+      <meta name="license"     content="license MIT: you can share and modify the software, but you must include the license file">
+      <meta name="keywords"    content="HTML,CSS,JavaScript, bilingue, video, audio, subtitle,clip">
+      <meta name="author"      content="Antonio Cigna">
+      <meta name="date"        content="2023">
+      <meta name="viewport"    content="width=device-width, initial-scale=1.0">
+      <title>used to build the script with the 'de_dewikt.csv' dictionary ( adding a key before each line) </title>
+
+
+<!--  -->
+<script src="ANTO_extract_german-ipa-script.js"> </script>
+<!-- -->
+
+<!--
+<script>
+var wordList = `
+anta
+anto
+antonello
+antonia 
+antonietta
+`.split("\n"); 
+
+</script>
+-->
+
+<style>
+.c_tdend {  min-width:10em;}
+.c_o { color:black; min-width:20em;} 
+.c_t { color:blue;} 
+.c_word{  font-size:2em;}
+.c_other{font-size:1.0em;}
+.c_top { margin-top: 1em;    padding-top: 1em;} 
+.c_bot { margin-bottom: 1em; padding-bottom: 1em;} 
+.c_left { text-align:left;}
+.c_search {  background-color: lightgrey;}
+</style>
+
+</head>
+<body>
+
+<script>
+
+//------------------------------------------	
+function download(filename, text) {
+
+    var element = document.createElement('a');
+
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' +
+        encodeURIComponent(text));
+    /**	
+    if (filename.indexOf(".html") > 0) {
+    	filename += ".txt"; 
+    }
+    **/
+
+    element.setAttribute('download', filename);
+
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
+//---------------------
+var inizio = "" + 
+	"//\n" +
+	"// quello che segue è il contenuto del file 'de_dewikt.csv' del software 'german-ipa-dict' in  github.com  \n" +
+	"// dove ogni riga è preceduta da un key in lower case  (  carattere di separazione / ) \n" +
+	"var wordList = \` \n"; 
+var fine = "\n" + '\`.split("\\n"); \n' + "// fine" ;  
+	
+
+
+
+
+// Iterative function to implement Binary Search
+// codice copiato da  https://www.geeksforgeeks.org/binary-search-in-javascript/  e un poco modificato
+
+//var myArray = wordList; // "anta, anto, antonello, antonia, antonietta".replaceAll(" ","").replaceAll(" ","").replaceAll(" ","").split(","); 
+var myArray = [];
+var col1 = [];
+var len1 = wordList.length;  
+//len1 = 100; 
+var riga;
+var nn=0; var passo=10000;
+
+for(var v1=0 ; v1 < len1; v1++) {	
+	nn = parseInt(v1 / passo);
+	if ((nn*passo) == v1) console.log("riga " + v1); 	
+	riga = wordList[v1].trim(); 
+	if (riga=="") continue;
+	col1 = riga.split("/");
+	myArray.push( col1[0].replaceAll(","," ").trim().toLowerCase() + "/" + riga);	
+}
+console.log("righe tot. " + len1); 	
+
+myArray.sort(); 
+var outArray = inizio + myArray.join("\n") + fine; 
+download("key_ipa_german_dict", outArray ); 
+
+</script>
+</body>
+
+</html>
