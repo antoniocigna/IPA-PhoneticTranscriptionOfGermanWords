@@ -139,6 +139,7 @@ var ele_closer   = document.getElementById("closer");
 
 //------------
 function uno() {
+
 	toBeSearched = eleInp1.value.trim().toLowerCase() ; // + " " +  eleInp1.value.trim(); 
 	//console.log("toBeSearched = " + toBeSearched  + " len array=" + myArray.length); 
 	
@@ -147,8 +148,8 @@ function uno() {
 	
 	//console.log("min1=" + min1 + "\nmax1=" + max1); 
 	
-	if (swFound) strFound="trovato "; 
-	else strFound = "non trovato" ; 
+	if (swFound) strFound="found"; 
+	else strFound = "not found" ; 
 	minVal="", maxVal=""; 
 	if  ((min1 >= 0) && (min1 < myArray.length)) minVal = myArray[min1]; 	
 	if  ((max1 >= 0) && (max1 < myArray.length)) maxVal = myArray[max1]; 
@@ -177,17 +178,8 @@ function uno() {
 	maxVV = maxV[1].replaceAll(","," ").trim(); maxTran = maxV[2] ; maxOth = maxV[3]; 
 	keyMin = minV[0]; //  + " " + minVV;
 	keyMax = maxV[0]; //  + " " + maxVV;
-	//console.log("minVal=" + minVV + "<==     minVV=" + minVV + "      minTran=" + minTran) 
-	//console.log("maxVal=" + maxVV + "<==     maxVV=" + maxVV + "      maxTran=" + maxTran) 
-	/**
-	console.log("" + 
-			"\n         pre=" + minVV + "<=="  + 
-			"\ntoBeSearched=" + toBeSearched + "<==" +  
-			"\n        post=" + maxVV + "<==" ); 
-	**/		
-	
 		
-			ele_tr_fnd2.style.display = null;		
+	ele_tr_fnd2.style.display = null;		
 			
 	swFound =( ( toBeSearched == keyMin) || ( toBeSearched == keyMax) ) ;    
 	if (swFound) {
@@ -224,27 +216,17 @@ function uno() {
 		ele_O_max.innerHTML   = maxVV; 
 		ele_T_max.innerHTML   = maxTran; 
 		ele_oth_max.innerHTML = maxOth;		
-		ele_found.innerHTML =  "non trovato"; // ""; 
+		ele_found.innerHTML =  "not found"; // ""; 
 		ele_O_fnd.innerHTML   = eleInp1.value.trim(); 
 		ele_T_fnd.innerHTML   = ""; 
 		ele_oth_fnd.innerHTML = "";	
 		ele_tr_fnd2.style.display = "none";		
 	}
-	/***
-	eleOut.innerHTML = "<b>" + toBeSearched + "</b>" + " " + strFound + " st trova tra " +
-		 "<br>   " + minVal + " (ix=" + min1 +") "  +  
-		 "<br> e " + maxVal + " (ix=" + max1+")"; 
-	if (!swFound) {
-		if (max1 >= myArray.length) {
-			eleOut.innerHTML = "<b>" + toBeSearched + "</b>" + " " + strFound + 
-				" dovrebbe stare dopo l'ultimo elemento " + minVal  + " (ix=" + min1 +") "  ; 
-		}
-		if (min1 < 0) {
-			eleOut.innerHTML = "<b>" + toBeSearched + "</b>" + " " + strFound + 
-				" dovrebbe stare prima del primo elemento " + maxVal + " (ix="+max1 + ")"  ; 
-		}
-	}	
-	***/	
+	
+	if (swFirst) {
+        firstPlay();
+        swFirst = false;
+    }	
 }
 </script>
 
